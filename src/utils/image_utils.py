@@ -10,7 +10,7 @@ class ScaleType(Enum):
     QUADRATIC = 2
 
 
-def change_luminance(image: Image, scale_type: ScaleType, factor: float = 1) -> Image:
+def change_luminance(image: Image, scale_type: ScaleType, factor: float = 1, clip: bool = False) -> Image:
     """
     Change the luminance of an image by scaling the Y channel values.
     
@@ -19,6 +19,7 @@ def change_luminance(image: Image, scale_type: ScaleType, factor: float = 1) -> 
         scale_type (ScaleType): Type of scaling that will be used.
         factor (float): Scaling factor for luminance adjustment.
                         Can be a constant value or 1/n for scaling.
+        clip (bool): to use np.clip should be True, to use linear scaling False
     
     Returns:
         Image: bgr image with adjusted luminance.
@@ -27,12 +28,25 @@ def change_luminance(image: Image, scale_type: ScaleType, factor: float = 1) -> 
     yuv_image = cv2.cvtColor(image, cv2.COLOR_RGB2YUV)
     y_channel = yuv_image[:,:,0]
     if scale_type == ScaleType.CONSTANT:
-        y_channel_scaled = np.clip(y_channel.astype(np.float32) + factor, 0, 255).astype(np.uint8)
+        if clip:
+            y_channel_scaled = np.clip(y_channel.astype(np.float32) + factor, 0, 255)
+        else: 
+            y_channel_scaled = (y_channel.astype(np.float32)+ factor) / (np.max(y_channel.astype(np.float32) + factor)) * 255
+
     elif scale_type == ScaleType.LINEAR:
         y_channel_scaled = y_channel * factor
+        if clip:
+            y_channel_scaled = np.clip(y_channel_scaled.astype(np.float32), 0, 255)
+        else:
+            y_channel_scaled = (y_channel_scaled - np.min(y_channel_scaled)) / (np.max(y_channel_scaled) - np.min(y_channel_scaled)) * 255
+
     elif scale_type == ScaleType.QUADRATIC:
-        y_channel_scaled = np.clip(y_channel.astype(np.float32) ** 2, 0, 255).astype(np.uint8)
-    yuv_image[:,:,0] = y_channel_scaled
+        if clip:
+            y_channel_scaled = np.clip(y_channel.astype(np.float32) ** 2, 0, 255)
+        else: 
+            y_channel_scaled = (y_channel.astype(np.float32) ** 2) / (np.max(y_channel.astype(np.float32) ** 2)) * 255
+
+    yuv_image[:,:,0] = y_channel_scaled.astype(np.uint8)
     result_image = cv2.cvtColor(yuv_image, cv2.COLOR_YUV2RGB)
     return result_image
 
