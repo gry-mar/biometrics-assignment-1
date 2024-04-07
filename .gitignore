@@ -1,3 +1,5 @@
 .venv
 images/ds_vggface_opencv_v2.pkl
+dataset
+notebooks/database
 __pycache__
