@@ -4,7 +4,9 @@ Projekt realizaowany w ramach kursu Biometria an Politechnice Wrocławskiej. Szc
 
 # Dane
 
-[LINK](https://drive.google.com/file/d/11xX92ZMYlCLqo04P2BsdncfK6xic-LWg/view?usp=drive_link)
+
+[LINK](https://drive.google.com/file/d/1RWcZi_GpCUI-EaS9ja3ThF8cDT_MZvee/view?usp=sharing)
+
 
 Struktura:
 
